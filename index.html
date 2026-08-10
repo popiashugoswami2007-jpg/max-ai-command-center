@@ -1,978 +1,125 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+@media (orientation: landscape) {
+  html,
+  body {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+  }
 
-<title>MAX AI Command Center</title>
+  body {
+    margin: 0;
+    padding: 0;
+  }
 
-<style>
-:root {
-    --green:#00ff66;
-    --green-soft:#8affb5;
-    --green-dark:#08783d;
-    --bg:#000b07;
-    --black:#000000;
-    --danger:#ff4d4d;
-    --warning:#ffd000;
-}
+  .app {
+    width: 100%;
+    height: 100dvh;
+    min-height: 0;
+    padding: 8px 12px;
+    gap: 8px;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    box-sizing: border-box;
+  }
 
-* {
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
+  .header {
+    width: 100%;
+    min-height: 0;
+    height: auto;
+    gap: 8px;
+    flex-shrink: 0;
+  }
 
-html,
-body {
-    width:100%;
-    min-height:100%;
-}
-
-body {
-    background:var(--bg);
-    color:var(--green);
-    font-family:"Courier New",Courier,monospace;
-    overflow-x:hidden;
-}
-
-.app {
-    width:100%;
-    min-height:100vh;
-    padding:clamp(10px,2vw,24px);
-    display:flex;
-    flex-direction:column;
-    gap:clamp(8px,1.4vw,16px);
-}
-
-.header {
-    width:100%;
-    display:flex;
-    align-items:center;
-    gap:clamp(10px,1.5vw,18px);
-    flex-shrink:0;
-}
-
-.status-light {
-    width:clamp(22px,3vw,40px);
-    height:clamp(22px,3vw,40px);
-    min-width:22px;
-    min-height:22px;
-    border-radius:50%;
-    background:#80bd3f;
-    box-shadow:0 0 8px #80bd3f,0 0 18px rgba(0,255,102,.25);
-}
-
-.header h1 {
-    font-size:clamp(18px,3vw,38px);
-    line-height:1.15;
-    color:var(--green);
-    font-weight:bold;
-    white-space:normal;
-    overflow-wrap:anywhere;
-}
-
-.dashboard {
-    width:100%;
-    flex:1;
-    min-height:0;
-    display:grid;
-    grid-template-columns:minmax(170px,.9fr) minmax(260px,1.45fr) minmax(170px,.9fr);
-    grid-template-rows:minmax(220px,1fr) minmax(180px,.75fr);
-    gap:clamp(8px,1.4vw,16px);
-}
-
-.box {
-    min-width:0;
-    min-height:0;
-    border:1px solid var(--green-dark);
-    background:linear-gradient(180deg,rgba(0,255,102,.015),rgba(0,0,0,.08));
-    padding:clamp(10px,1.5vw,18px);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-}
-
-.box h2 {
-    flex-shrink:0;
-    font-size:clamp(15px,2vw,25px);
-    line-height:1.2;
-    margin-bottom:clamp(10px,1.5vw,18px);
-    color:var(--green);
-    overflow-wrap:anywhere;
-}
-
-.command-box {
-    grid-column:1;
-    grid-row:1;
-}
-
-.command-input-area {
-    flex:1;
-    min-height:0;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
-
-textarea {
-    width:100%;
-    flex:1;
-    min-height:80px;
-    resize:none;
-    background:#000;
-    color:var(--green);
-    border:1px solid var(--green-dark);
-    outline:none;
-    padding:12px;
-    font-family:inherit;
-    font-size:clamp(14px,1.7vw,19px);
-    line-height:1.35;
-}
-
-textarea::placeholder {
-    color:#666;
-}
-
-textarea:focus {
-    border-color:var(--green);
-    box-shadow:0 0 8px rgba(0,255,102,.15);
-}
-
-button {
-    border:none;
-    background:var(--green);
-    color:#001006;
-    padding:12px 20px;
-    min-height:44px;
-    font-family:inherit;
-    font-size:clamp(14px,1.7vw,19px);
-    font-weight:bold;
-    cursor:pointer;
-    touch-action:manipulation;
-}
-
-button:hover {
-    filter:brightness(1.15);
-}
-
-button:active {
-    transform:scale(.98);
-}
-
-button:disabled {
-    opacity:.5;
-    cursor:not-allowed;
-}
-
-.workflow-box {
-    grid-column:2;
-    grid-row:1;
-}
-
-.workflow {
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-}
-
-.step {
-    position:relative;
-    margin-left:10px;
-    padding:8px 10px 8px 18px;
-    border-left:3px solid var(--green-dark);
-    color:#0aff69;
-    font-size:clamp(14px,1.6vw,20px);
-    line-height:1.35;
-    margin-bottom:8px;
-}
-
-.step.active {
-    border-left-color:var(--green);
-    background:rgba(0,255,102,.07);
-    color:white;
-}
-
-.step.done {
-    border-left-color:#0a7;
-    color:var(--green-soft);
-}
-
-.step-number {
-    display:inline-block;
-    margin-right:8px;
-}
-
-.output-box {
-    grid-column:3;
-    grid-row:1;
-}
-
-.output {
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    color:var(--green-soft);
-    font-size:clamp(14px,1.6vw,20px);
-    line-height:1.45;
-    white-space:pre-wrap;
-    overflow-wrap:anywhere;
-}
-
-.logs-box {
-    grid-column:1 / 3;
-    grid-row:2;
-}
-
-.logs {
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    color:#a6e9bd;
-    font-size:clamp(13px,1.5vw,18px);
-    line-height:1.5;
-    white-space:pre-wrap;
-    overflow-wrap:anywhere;
-}
-
-.log-line {
-    margin-bottom:5px;
-}
-
-.log-system {
-    color:#a6e9bd;
-}
-
-.log-success {
-    color:var(--green);
-}
-
-.log-error {
-    color:var(--danger);
-}
-
-.log-warning {
-    color:var(--warning);
-}
-
-.status-box {
-    grid-column:3;
-    grid-row:2;
-}
-
-.status-content {
-    flex:1;
-    min-height:0;
-    overflow-y:auto;
-    overflow-x:hidden;
-    font-size:clamp(14px,1.5vw,19px);
-    line-height:1.45;
-}
-
-.status-item {
-    margin-bottom:14px;
-    overflow-wrap:anywhere;
-}
-
-.online {
-    color:var(--green);
-    font-weight:bold;
-}
-
-.status-label {
-    color:var(--green-soft);
-}
-
-.status-value {
-    color:var(--green);
-}
-
-.blink {
-    animation:blink 1s infinite;
-}
-
-@keyframes blink {
-    0%,45% {opacity:1;}
-    50%,100% {opacity:.35;}
-}
- @media (orientation:portrait) {
-
-    body {
-        overflow-y:auto;
-    }
-
-    .app {
-        min-height:100vh;
-    }
-
+  .header h1 {
+    margin: 0;
+    font-size: clamp(16px, 2.8vw, 28px);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
     .dashboard {
-        flex:none;
-        min-height:auto;
-        grid-template-columns:1fr;
-        grid-template-rows:none;
-        gap:10px;
-    }
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns:
+      minmax(150px, 0.9fr)
+      minmax(260px, 1.7fr)
+      minmax(170px, 0.9fr);
+    grid-template-rows: minmax(150px, 0.8fr) minmax(150px, 1.2fr);
+    gap: 8px;
+    overflow: hidden;
+  }
 
-    .command-box,
-    .workflow-box,
-    .output-box,
-    .logs-box,
-    .status-box {
-        grid-column:1;
-        grid-row:auto;
-    }
+  .box {
+    min-width: 0;
+    min-height: 0;
+    padding: 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
 
-    .box {
-        min-height:260px;
-    }
+  textarea {
+    width: 100%;
+    height: 70px;
+    min-height: 0;
+    box-sizing: border-box;
+    resize: none;
+  }
 
-    .command-box {
-        min-height:330px;
-    }
+  button {
+    padding: 9px 18px;
+    margin-top: 8px;
+  }
 
-    .workflow-box {
-        min-height:330px;
-    }
+  .workflow {
+    min-height: 0;
+    overflow: auto;
+  }
 
-    .output-box {
-        min-height:260px;
-    }
+  .workflow pre {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+    .logs {
+    min-height: 0;
+    overflow: auto;
+  }
 
-    .logs-box {
-        min-height:300px;
-    }
+  .phone-status {
+    min-height: 0;
+    overflow: auto;
+  }
 
-    .status-box {
-        min-height:300px;
-    }
+  .live-output {
+    min-height: 0;
+    overflow: auto;
+  }
 
-    textarea {
-        min-height:150px;
-    }
+  pre {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
 }
 
-@media (orientation:landscape) and (max-height:600px) {
+@media (orientation: portrait) {
+  body {
+    overflow: auto;
+  }
 
-    body {
-        overflow:hidden;
-    }
+  .app {
+    height: auto;
+    min-height: 100dvh;
+  }
 
-    .app {
-        height:100vh;
-        min-height:0;
-        padding:8px clamp(10px,2vw,20px);
-        gap:8px;
-    }
-
-    .header {
-        min-height:38px;
-    }
-
-    .header h1 {
-        font-size:clamp(16px,3.2vw,26px);
-    }
-
-    .status-light {
-        width:25px;
-        height:25px;
-    }
-
-    .dashboard {
-        min-height:0;
-        grid-template-columns:
-            minmax(145px,.85fr)
-            minmax(250px,1.5fr)
-            minmax(145px,.85fr);
-        grid-template-rows:
-            minmax(155px,1fr)
-            minmax(145px,1fr);
-        gap:8px;
-    }
-
-    .box {
-        padding:9px;
-    }
-
-    .box h2 {
-        font-size:clamp(13px,2.3vw,19px);
-        margin-bottom:7px;
-    }
-
-    textarea {
-        min-height:55px;
-        padding:8px;
-        font-size:13px;
-    }
-
-    button {
-        min-height:36px;
-        padding:8px 14px;
-        font-size:13px;
-    }
-
-    .step {
-        font-size:clamp(12px,1.8vw,16px);
-        padding:5px 7px 5px 12px;
-        margin-bottom:4px;
-    }
-
-    .output,
-    .logs,
-    .status-content {
-        font-size:clamp(11px,1.7vw,15px);
-    }
-
-    .status-item {
-        margin-bottom:7px;
-    }
+  .dashboard {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
 }
-
-@media (orientation:landscape) and (max-height:430px) {
-
-    .app {
-        padding:5px 10px;
-        gap:5px;
-    }
-
-    .header {
-        min-height:30px;
-    }
-
-    .status-light {
-        width:20px;
-        height:20px;
-    }
-
-    .dashboard {
-        grid-template-rows:
-            minmax(135px,1fr)
-            minmax(125px,1fr);
-    }
-
-    .box {
-        padding:6px;
-    }
-
-    .box h2 {
-        font-size:13px;
-        margin-bottom:5px;
-    }
-
-    .step {
-        font-size:11px;
-        padding:3px 5px 3px 9px;
-    }
-
-    .output,
-    .logs,
-    .status-content {
-        font-size:11px;
-    }
-
-    .status-item {
-        margin-bottom:4px;
-    }
-
-    textarea {
-        padding:6px;
-        font-size:11px;
-        min-height:45px;
-    }
-
-    button {
-        min-height:30px;
-        padding:5px 10px;
-        font-size:11px;
-    }
-}
-
-@media (min-width:1200px) {
-
-    .dashboard {
-        max-width:1600px;
-        margin:0 auto;
-        width:100%;
-    }
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<header class="header">
-
-    <div class="status-light"></div>
-
-    <h1>
-        MAX AI COMMAND CENTER
-        <span>// YOU COMMAND, MAX EXECUTES</span>
-    </h1>
-
-</header>
-
-<main class="dashboard">
-
-<section class="box command-box">
-
-    <h2>COMMAND INPUT</h2>
-
-    <div class="command-input-area">
-
-        <textarea
-            id="commandInput"
-            placeholder="Enter command..."
-            autocomplete="off"
-            spellcheck="false"></textarea>
-
-        <button id="executeBtn">
-            EXECUTE
-        </button>
-
-    </div>
-
-</section>
-
-<section class="box workflow-box">
-
-    <h2>WORKFLOW EXECUTION — LIVE</h2>
-
-    <div class="workflow" id="workflow">
-
-        <div class="step" data-step="1">
-            <span class="step-number">01</span>
-            Command Received
-        </div>
-
-        <div class="step" data-step="2">
-            <span class="step-number">02</span>
-            Intent Analysis
-        </div>
-
-        <div class="step" data-step="3">
-            <span class="step-number">03</span>
-            Task Planning
-        </div>
-
-        <div class="step" data-step="4">
-            <span class="step-number">04</span>
-            Execution
-        </div>
-
-    </div>
-
-</section>
-
-<section class="box output-box">
-
-    <h2>LIVE OUTPUT</h2>
-
-    <div class="output" id="output">
-        Waiting for command...
-    </div>
-
-</section>
-
-<section class="box logs-box">
-
-    <h2>LIVE LOGS</h2>
-
-    <div class="logs" id="logs">
-
-        <div class="log-line log-system">
-            [SYSTEM] Command Center ready
-        </div>
-
-        <div class="log-line log-system">
-            [SYSTEM] Waiting for command...
-        </div>
-
-    </div>
-
-</section>
-
-<section class="box status-box">
-
-    <h2>PHONE STATUS</h2>
-
-    <div class="status-content">
-
-        <div class="status-item online">
-            ● MAX ONLINE
-        </div>
-
-        <div class="status-item">
-            📱
-            <span class="status-label">Phone:</span>
-            <span class="status-value">READY</span>
-        </div>
-
-        <div class="status-item">
-            🔐
-            <span class="status-label">Accessibility:</span>
-            <span class="status-value">ON</span>
-        </div>
-
-        <div class="status-item">
-            ⚡
-            <span class="status-label">Connection:</span>
-            <span class="status-value">Secure</span>
-        </div>
-
-        <div class="status-item">
-            📊
-            <span class="status-label">Battery:</span>
-            <span class="status-value" id="battery">
-                Checking...
-            </span>
-        </div>
-
-        <div class="status-item">
-            🌐
-            <span class="status-label">Network:</span>
-            <span class="status-value">
-                Connected
-            </span>
-        </div>
-
-        <div class="status-item">
-            🛡️
-            <span class="status-label">Security:</span>
-            <span class="status-value">
-                Active
-            </span>
-        </div>
-
-    </div>
-
-</section>
-
-</main>
-
-</div>
-
-<script>
- const commandInput =
-    document.getElementById("commandInput");
-
-const executeBtn =
-    document.getElementById("executeBtn");
-
-const output =
-    document.getElementById("output");
-
-const logs =
-    document.getElementById("logs");
-
-const steps =
-    Array.from(
-        document.querySelectorAll(".step")
-    );
-
-const batteryElement =
-    document.getElementById("battery");
-
-
-function addLog(message, type = "system") {
-
-    const line =
-        document.createElement("div");
-
-    line.className =
-        "log-line log-" + type;
-
-    const time =
-        new Date().toLocaleTimeString();
-
-    line.textContent =
-        "[" + time + "] " + message;
-
-    logs.appendChild(line);
-
-    logs.scrollTop =
-        logs.scrollHeight;
-}
-
-
-function setOutput(text) {
-
-    output.textContent = text;
-
-    output.scrollTop =
-        output.scrollHeight;
-}
-
-
-function resetWorkflow() {
-
-    steps.forEach(step => {
-
-        step.classList.remove("active");
-        step.classList.remove("done");
-
-    });
-}
-
-
-function activateStep(number) {
-
-    steps.forEach((step, index) => {
-
-        if (index + 1 < number) {
-
-            step.classList.remove("active");
-            step.classList.add("done");
-
-        } else if (index + 1 === number) {
-
-            step.classList.add("active");
-
-        } else {
-
-            step.classList.remove("active");
-            step.classList.remove("done");
-
-        }
-
-    });
-
-    const active =
-        steps[number - 1];
-
-    if (active) {
-
-        active.scrollIntoView({
-            behavior:"smooth",
-            block:"nearest"
-        });
-
-    }
-}
-
-
-async function executeCommand() {
-
-    const command =
-        commandInput.value.trim();
-
-    if (!command) {
-
-        setOutput(
-            "Please enter a command."
-        );
-
-        addLog(
-            "No command entered.",
-            "warning"
-        );
-
-        commandInput.focus();
-
-        return;
-    }
-
-    executeBtn.disabled = true;
-
-    resetWorkflow();
-
-
-    activateStep(1);
-
-    addLog(
-        "Command received: " + command,
-        "success"
-    );
-
-    setOutput(
-        "Command received...\n\n" +
-        command
-    );
-
-    await wait(700);
-
-
-    activateStep(2);
-
-    addLog(
-        "Analyzing command intent...",
-        "system"
-    );
-
-    setOutput(
-        "COMMAND RECEIVED\n\n" +
-        command +
-        "\n\n" +
-        "Analyzing intent..."
-    );
-
-    await wait(900);
-
-
-    activateStep(3);
-
-    addLog(
-        "Building execution plan...",
-        "system"
-    );
-
-    setOutput(
-        "COMMAND RECEIVED\n\n" +
-        command +
-        "\n\n" +
-        "INTENT ANALYSIS\n" +
-        "Command understood.\n\n" +
-        "TASK PLANNING\n" +
-        "Preparing execution..."
-    );
-
-    await wait(900);
-
-
-    activateStep(4);
-
-    addLog(
-        "Executing command...",
-        "success"
-    );
-
-    setOutput(
-        "COMMAND RECEIVED\n\n" +
-        command +
-        "\n\n" +
-        "INTENT ANALYSIS\n" +
-        "Command understood.\n\n" +
-        "TASK PLANNING\n" +
-        "Execution plan ready.\n\n" +
-        "EXECUTION\n" +
-        "MAX is executing..."
-    );
-
-    await wait(1200);
-
-
-    steps.forEach(step => {
-
-        step.classList.remove("active");
-        step.classList.add("done");
-
-    });
-
-
-    addLog(
-        "Command execution completed.",
-        "success"
-    );
-
-    setOutput(
-        "✓ COMMAND COMPLETED\n\n" +
-        "Command:\n" +
-        command +
-        "\n\n" +
-        "MAX STATUS: ONLINE\n" +
-        "Execution: COMPLETE"
-    );
-
-
-    executeBtn.disabled = false;
-}
-
-
-function wait(ms) {
-
-    return new Promise(
-        resolve => setTimeout(resolve, ms)
-    );
-
-}
-
-
-commandInput.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Enter" &&
-            !event.shiftKey
-        ) {
-
-            event.preventDefault();
-
-            executeCommand();
-
-        }
-
-    }
-);
-
-
-executeBtn.addEventListener(
-    "click",
-    executeCommand
-);
-
-
-async function getBattery() {
-
-    if ("getBattery" in navigator) {
-
-        try {
-
-            const battery =
-                await navigator.getBattery();
-
-            function updateBattery() {
-
-                const percentage =
-                    Math.round(
-                        battery.level * 100
-                    );
-
-                batteryElement.textContent =
-                    percentage + "%";
-            }
-
-            updateBattery();
-
-            battery.addEventListener(
-                "levelchange",
-                updateBattery
-            );
-
-        } catch (error) {
-
-            batteryElement.textContent =
-                "Available";
-
-        }
-
-    } else {
-
-        batteryElement.textContent =
-            "Available";
-
-    }
-}
-
-
-getBattery();
-
-
-addLog(
-    "MAX AI interface initialized.",
-    "system"
-);
-
-addLog(
-    "Responsive landscape mode active.",
-    "success"
-);
-
-</script>
-
-</body>
-</html>
