@@ -1,1 +1,39 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MAX AI Command Center</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+<header>
+  <div><h1>MAX AI Command Center</h1><p>AI control dashboard</p></div>
+  <b class="online">● ONLINE</b>
+</header>
+<main>
+<section class="box big">
+  <h2>⚡ Command Center</h2>
+  <textarea id="command" placeholder="Type your command here..."></textarea>
+  <button onclick="runCommand()">RUN COMMAND</button>
+  <div id="output">Ready...</div>
+</section>
+<section class="box">
+  <h2>🤖 AI Assistant</h2>
+  <p class="muted">MAX AI system is ready.</p>
+  <div class="info"><div><small>STATUS</small><strong>ONLINE</strong></div><div><small>MODEL</small><strong>MAX AI</strong></div></div>
+</section>
+<section class="box">
+  <h2>🛠 Quick Actions</h2>
+  <button onclick="quickAction('System check started')">System Check</button>
+  <button onclick="quickAction('AI interface opened')">Open AI</button>
+  <button onclick="quickAction('Dashboard refreshed')">Refresh</button>
+  <button onclick="quickAction('Command center ready')">Test System</button>
+</section>
+<section class="box logs"><h2>📋 Live Logs</h2><div id="logs"></div></section>
+</main>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
